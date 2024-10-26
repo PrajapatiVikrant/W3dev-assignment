@@ -5,5 +5,6 @@ const crud = require('../controller/Crud')
 router.get('/',JWTverify,crud.getData)
 router.post('/',JWTverify,crud.addData)
 router.put('/:id',JWTverify,crud.updateData)
+router.put('/check/:id',JWTverify,crud.updateData)
 router.delete('/:id',JWTverify,crud.deleteData)
 module.exports = router;

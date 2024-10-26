@@ -26,7 +26,7 @@ const Crud = {
     console.log('hello world')
     try {
         const data = await User.findOne({email:req.body.email});
-        const updatedArray = [...data.data,req.query.newData];
+        const updatedArray = [...data.data,{checkstatus:false,text:req.query.newData}];
         data.data = updatedArray;
         await User.updateOne({email:req.body.email},{data:data.data});
        
@@ -42,6 +42,7 @@ const Crud = {
     }
    },
    updateData:async(req,res)=>{
+    const {id,updateData} = req.query;
     try {
         const data = await User.findOne({email:req.body.email});
         if(!data){
@@ -49,16 +50,10 @@ const Crud = {
                 message:"Not found"
             })
         }else{
-          let updatedArray =  data.data.map((elem,ind)=>{
-            if(ind == req.params.id){
-                elem = req.query.updateData;
-            }
-            
-            return elem;
-          })
+         
       
-          data.data = updatedArray;
-          await User.updateOne({email:req.body.email},{data:data.data});
+          
+          await User.updateOne({email:req.body.email,'data._id':id},{$set:{ 'data.$.text':updateData});
           res.status(200).json({
             message:"Edit Successfully"
           })
@@ -70,15 +65,31 @@ const Crud = {
         })
     }
    },
+   checkHandle:async(req,res)=>{
+    const { checkstatus,id} = req.params;
+    try{
+        if(checkstatus){
+          await User.updateOne({email:req.body.email,'data._id':id},{set:{'data.$.checkstatus':false}})
+        }else{
+          await User.updateOne({email:req.body.email,'data._id':id},{set:{'data.$.checkstatus':true}})
+        }
+        res.json({message:"checked"})
+
+    }catch{
+
+    }
+
+   },
    deleteData:async(req,res)=>{
+    const {id} = req.query;
     try {
-      const data = await User.findOne({email:req.body.email});
-      const updatedArray = data.data.filter((elem,ind)=>{
-        return ind != req.params.id;
+      await User.updateOne({email:req.body.email},{
+        $pull:{
+            data:{
+                _id:id
+            }
+        }
       })
-    
-      data.data = updatedArray
-      await User.updateOne({email:req.body.email},{data:data.data})
       res.status(200).json({
         message:"delete item"
     })

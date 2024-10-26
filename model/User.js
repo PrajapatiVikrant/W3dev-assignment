@@ -18,7 +18,20 @@ const userSchema = new mongoose.Schema({
   data:{
     type:Array,
     required:true
-  }
+  },
+  data:[
+    {
+      checkstatus:{
+        type:Boolean,
+        default:false
+      },
+      text:{
+        type: String,
+        required:true
+      }
+    }
+   
+  ]
 });
 
 const User = mongoose.model('todolist', userSchema);
