@@ -42,7 +42,8 @@ const Crud = {
     }
    },
    updateData:async(req,res)=>{
-    const {id,updateData} = req.query;
+    const {id} = req.params;
+    const {updateData} = req.query
     try {
         const data = await User.findOne({email:req.body.email});
         if(!data){
@@ -53,7 +54,7 @@ const Crud = {
          
       
           
-          await User.updateOne({email:req.body.email,'data._id':id},{$set:{ 'data.$.text':updateData});
+          await User.updateOne({email:req.body.email,'data._id':id},{$set:{ 'data.$.text':updateData}});
           res.status(200).json({
             message:"Edit Successfully"
           })
@@ -81,7 +82,7 @@ const Crud = {
 
    },
    deleteData:async(req,res)=>{
-    const {id} = req.query;
+    const {id} = req.params;
     try {
       await User.updateOne({email:req.body.email},{
         $pull:{
